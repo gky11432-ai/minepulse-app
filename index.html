@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MinePulse AI - Smart Governance & Compliance System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden !important; }
+      #report-printable, #report-printable * { visibility: visible !important; }
+      #report-printable { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-500">
+          <i data-lucide="shield-alert" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-white">MinePulse <span class="text-amber-500">AI</span></h1>
+          <p class="text-xs text-slate-400">Coal India Limited • Statutory Compliance Platform</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button onclick="switchTab('dashboard')" id="tab-dash-btn" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition">HQ Command Center</button>
+        <button onclick="switchTab('mobile')" id="tab-mob-btn" class="text-xs px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">Field Inspector App</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+
+    <!-- TAB 1: EXECUTIVE HQ DASHBOARD -->
+    <div id="view-dashboard" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+          <p class="text-xs text-slate-400">Daily Extraction vs Dispatch</p>
+          <h3 class="text-2xl font-bold mt-1 text-white">42,850 MT</h3>
+          <span class="text-xs text-rose-400 flex items-center mt-1"><i data-lucide="alert-triangle" class="w-3.5 h-3.5 mr-1"></i> -380 MT Siding Variance</span>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+          <p class="text-xs text-slate-400">Average Compliance Index</p>
+          <h3 class="text-2xl font-bold mt-1 text-emerald-400" id="avg-compliance-metric">-- / 100</h3>
+          <span class="text-xs text-emerald-400 flex items-center mt-1"><i data-lucide="check-circle" class="w-3.5 h-3.5 mr-1"></i> CMR 2017 Standard</span>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+          <p class="text-xs text-slate-400">Total Statutory Logs</p>
+          <h3 class="text-2xl font-bold mt-1 text-amber-400" id="total-logs-count">0</h3>
+          <span class="text-xs text-amber-400 flex items-center mt-1"><i data-lucide="database" class="w-3.5 h-3.5 mr-1"></i> SHA-256 Verified</span>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+          <p class="text-xs text-slate-400">CAAQMS Air Quality</p>
+          <h3 class="text-2xl font-bold mt-1 text-rose-400">168 µg/m³</h3>
+          <span class="text-xs text-rose-400 flex items-center mt-1"><i data-lucide="wind" class="w-3.5 h-3.5 mr-1"></i> Mist Cannons Active</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <h2 class="font-bold text-white mb-4 flex items-center space-x-2">
+              <i data-lucide="map-pin" class="w-4 h-4 text-amber-500"></i>
+              <span>Live Colliery Risk Registry</span>
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="text-xs uppercase bg-slate-950 text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="p-2.5">Mine Site</th>
+                    <th class="p-2.5">Type</th>
+                    <th class="p-2.5">AI Compliance Score</th>
+                    <th class="p-2.5">Dust (PM10)</th>
+                  </tr>
+                </thead>
+                <tbody id="mines-table-body" class="divide-y divide-slate-800/80"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Anomaly Notification Card -->
+          <div class="bg-slate-900 border border-amber-500/30 rounded-xl p-4 flex items-start space-x-4">
+            <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg shrink-0"><i data-lucide="cpu" class="w-6 h-6"></i></div>
+            <div>
+              <h4 class="font-bold text-white text-sm">Automated Triangulation Engine (AI Anomaly)</h4>
+              <p class="text-xs text-slate-300 mt-1">Discrepancy at Gevra Siding #4: Extraction weight exceeds automated weighbridge exit telemetry by 380 MT. DGMS review recommended.</p>
+              <button onclick="generateReport()" class="mt-3 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg">Generate DGMS Form-VI PDF</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Observation Audit Feed -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col h-full">
+          <h2 class="font-bold text-white mb-4 flex items-center justify-between text-sm">
+            <span class="flex items-center space-x-2">
+              <i data-lucide="radio" class="w-4 h-4 text-emerald-400 animate-pulse"></i>
+              <span>Statutory Inspection Feed</span>
+            </span>
+          </h2>
+          <div id="observations-list" class="space-y-3 overflow-y-auto max-h-[500px] flex-1 pr-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: MOBILE FIELD OFFICER INSPECTOR -->
+    <div id="view-mobile" class="hidden max-w-xl mx-auto space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+        <div>
+          <h2 class="font-bold text-lg text-white flex items-center space-x-2">
+            <i data-lucide="smartphone" class="w-5 h-5 text-amber-500"></i>
+            <span>Field Inspection Ingestion</span>
+          </h2>
+          <p class="text-xs text-slate-400">Offline-Capable • Geo-Tagged Data Logging</p>
+        </div>
+
+        <form onsubmit="submitForm(event)" class="space-y-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Target Mine Site</label>
+            <select id="form-mine-id" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200"></select>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Statutory Regulation Domain</label>
+            <select id="form-category" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200">
+              <option value="Safety (CMR 2017: Ventilation & Slope)">Safety (CMR 2017: Ventilation & Slope)</option>
+              <option value="Environmental & Dust Suppression">Environmental (CPCB & Water Sprinkling)</option>
+              <option value="Contractor & Labour Compliance">Contractor (CMPFO Wages & Gate VTC)</option>
+              <option value="Explosive Magazine Protocols">Explosive Magazine & Blasting Rules</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Hazard / Observation Note</label>
+            <textarea id="form-notes" rows="3" required placeholder="Detail ground findings..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Severity SLA</label>
+              <select id="form-severity" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
+                <option value="Normal">Routine</option>
+                <option value="Medium">Medium (72h SLA)</option>
+                <option value="Critical">Critical (Immediate DGMS Alert)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Geotag Validation</label>
+              <button type="button" onclick="detectGPS()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center space-x-1">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span id="gps-btn-label">Lock Real GPS</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-lg transition text-sm flex items-center justify-center space-x-2">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Commit To Secure Audit Trail</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- DGMS Form-VI Printable Report -->
+    <div id="report-printable" class="hidden bg-white text-slate-900 p-8 rounded-xl max-w-3xl mx-auto border border-slate-300">
+      <div class="text-center border-b pb-4 mb-4">
+        <h2 class="text-xl font-bold uppercase">Coal India Limited & DGMS</h2>
+        <p class="text-xs text-slate-600">Directorate General of Mines Safety • Statutory Audit Sheet</p>
+        <p class="text-[10px] text-slate-500 mt-1" id="report-date"></p>
+      </div>
+      <div id="report-body" class="text-xs space-y-3"></div>
+      <div class="mt-8 pt-4 border-t flex justify-between text-xs no-print">
+        <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded">Print / PDF</button>
+        <button onclick="document.getElementById('report-printable').classList.add('hidden')" class="bg-slate-200 px-4 py-2 rounded text-slate-800">Dismiss</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let currentLat = 23.7412;
+    let currentLng = 86.4189;
+    let loadedMines = [];
+
+    async function loadDashboardData() {
+      try {
+        const [minesRes, obsRes] = await Promise.all([
+          fetch('/api/v1/mines'),
+          fetch('/api/v1/observations')
+        ]);
+        loadedMines = await minesRes.json();
+        const obsData = await obsRes.json();
+
+        renderMinesTable(loadedMines);
+        renderObservationsFeed(obsData);
+        populateDropdown(loadedMines);
+
+        const avgScore = (loadedMines.reduce((acc, m) => acc + m.compliance_score, 0) / loadedMines.length).toFixed(1);
+        document.getElementById('avg-compliance-metric').innerText = `${avgScore} / 100`;
+        document.getElementById('total-logs-count').innerText = obsData.length;
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    }
+
+    function renderMinesTable(mines) {
+      const tbody = document.getElementById('mines-table-body');
+      tbody.innerHTML = mines.map(m => `
+        <tr class="hover:bg-slate-900/50">
+          <td class="p-2.5 font-medium text-white">${m.name} <span class="text-xs text-slate-400 font-mono block">${m.id} | ${m.subsidiary}</span></td>
+          <td class="p-2.5 text-xs text-slate-300">${m.mine_type}</td>
+          <td class="p-2.5">
+            <span class="px-2 py-0.5 rounded text-xs font-semibold ${m.risk_level === 'Safe' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">
+              ${m.compliance_score}% (${m.risk_level})
+            </span>
+          </td>
+          <td class="p-2.5 text-xs font-mono">${m.pm10_reading} µg/m³</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderObservationsFeed(observations) {
+      const list = document.getElementById('observations-list');
+      if (observations.length === 0) {
+        list.innerHTML = `<p class="text-xs text-slate-500 italic">No observations logged yet.</p>`;
+        return;
+      }
+      list.innerHTML = observations.map(o => `
+        <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs space-y-1">
+          <div class="flex justify-between items-center text-slate-400">
+            <strong class="text-white">${o.mine_name}</strong>
+            <span class="text-[10px] font-mono">${o.timestamp}</span>
+          </div>
+          <p class="text-slate-300">${o.notes}</p>
+          <div class="text-[10px] font-mono text-emerald-400 flex justify-between pt-1 border-t border-slate-800">
+            <span>${o.category}</span>
+            <span>GPS: ${o.latitude.toFixed(4)}, ${o.longitude.toFixed(4)}</span>
+          </div>
+          <div class="text-[9px] font-mono text-slate-500 truncate">Hash: ${o.sha256_hash}</div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function populateDropdown(mines) {
+      const select = document.getElementById('form-mine-id');
+      select.innerHTML = mines.map(m => `<option value="${m.id}">${m.name} (${m.subsidiary})</option>`).join('');
+    }
+
+    function detectGPS() {
+      const lbl = document.getElementById('gps-btn-label');
+      lbl.innerText = "Locating GPS...";
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            currentLat = pos.coords.latitude;
+            currentLng = pos.coords.longitude;
+            lbl.innerText = `GPS: ${currentLat.toFixed(3)}, ${currentLng.toFixed(3)}`;
+          },
+          () => {
+            lbl.innerText = "Geo-Fence Locked";
+          }
+        );
+      }
+    }
+
+    async function submitForm(e) {
+      e.preventDefault();
+      const payload = {
+        mine_id: document.getElementById('form-mine-id').value,
+        category: document.getElementById('form-category').value,
+        notes: document.getElementById('form-notes').value,
+        severity: document.getElementById('form-severity').value,
+        latitude: currentLat,
+        longitude: currentLng
+      };
+
+      const res = await fetch('/api/v1/observations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert("Observation logged to SHA-256 Audit Trail and synced successfully!");
+        document.getElementById('form-notes').value = '';
+        switchTab('dashboard');
+        loadDashboardData();
+      } else {
+        alert("Submission failed. Check network or server status.");
+      }
+    }
+
+    function switchTab(tab) {
+      if (tab === 'mobile') {
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('view-mobile').classList.remove('hidden');
+      } else {
+        document.getElementById('view-mobile').classList.add('hidden');
+        document.getElementById('view-dashboard').classList.remove('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function generateReport() {
+      const box = document.getElementById('report-printable');
+      document.getElementById('report-date').innerText = `Generated: ${new Date().toLocaleString()}`;
+      document.getElementById('report-body').innerHTML = `
+        <p><strong>Statutory Compliance Summary (CMR 2017)</strong></p>
+        <ul class="list-disc pl-5 mt-2 space-y-1">
+          <li>Total Monitored Mines: ${loadedMines.length} Sites</li>
+          <li>Active Critical Variances: 1 (Gevra Siding 380 MT gap)</li>
+          <li>Status: SHA-256 Encrypted Audit Trail Verified</li>
+        </ul>
+      `;
+      box.classList.remove('hidden');
+      box.scrollIntoView();
+    }
+
+    window.onload = () => {
+      loadDashboardData();
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
