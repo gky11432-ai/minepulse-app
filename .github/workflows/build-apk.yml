@@ -1,0 +1,138 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Web Directory & Capacitor
+        run: |
+          mkdir -p www
+          cat << 'EOF' > www/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+            <title>MinePulse AI</title>
+            <style>
+              * { box-sizing: border-box; margin: 0; padding: 0; }
+              body { background: #020617; color: #f8fafc; font-family: system-ui, sans-serif; padding: 16px; }
+              header { background: #0f172a; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+              .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+              .btn-sos { background: #dc2626; color: #fff; font-weight: bold; border: none; padding: 10px 16px; border-radius: 8px; }
+              input, select, textarea { width: 100%; background: #020617; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 6px; margin: 6px 0 12px; }
+              .btn-save { width: 100%; background: #f59e0b; color: #000; font-weight: bold; padding: 12px; border: none; border-radius: 8px; }
+            </style>
+          </head>
+          <body>
+            <header>
+              <strong>⛏️ MinePulse AI (Pit Vault)</strong>
+              <button onclick="triggerAlarm()" class="btn-sos">🚨 SOS</button>
+            </header>
+            <div class="card">
+              <div style="font-size:11px; color:#94a3b8;">STORAGE ENGINE</div>
+              <div style="font-size:15px; font-weight:bold; color:#34d399;">Native Local Disk Vault</div>
+            </div>
+            <div class="card">
+              <h3 style="font-size:13px; margin-bottom:8px;">DGMS Statutory Inspection (CMR 2017)</h3>
+              <form onsubmit="saveOffline(event)">
+                <label style="font-size:11px; color:#94a3b8;">Colliery Unit</label>
+                <select id="mine_id">
+                  <option value="SECL-GV-04">Gevra Sector B (SECL)</option>
+                  <option value="BCCL-JH-07">Jharia Pit 7 (BCCL)</option>
+                </select>
+                <label style="font-size:11px; color:#94a3b8;">Regulation Domain</label>
+                <select id="cat">
+                  <option value="CMR 153">CMR 153: Face Ventilation & Gas</option>
+                  <option value="CMR 106">CMR 106: Highwall Bench Stability</option>
+                </select>
+                <label style="font-size:11px; color:#94a3b8;">Observations & Orders</label>
+                <textarea id="notes" rows="3" required placeholder="Observations enter karein..."></textarea>
+                <button type="submit" class="btn-save">Sign & Save Locally</button>
+              </form>
+            </div>
+            <div class="card">
+              <div style="font-size:12px; font-weight:bold; margin-bottom:8px;">Offline Stored Records</div>
+              <div id="log-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+            </div>
+            <script>
+              var records = JSON.parse(localStorage.getItem('mine_logs') || '[]');
+              function render() {
+                var el = document.getElementById('log-list');
+                if (records.length === 0) { el.innerHTML = '<div style="font-size:11px; color:#64748b;">No local records pending.</div>'; return; }
+                el.innerHTML = records.map(function(r) {
+                  return '<div style="background:#020617; border:1px solid #1e293b; padding:8px; border-radius:6px; font-size:11px;">' +
+                    '<div><strong>' + r.category + '</strong>: ' + r.notes + '</div>' +
+                    '<div style="color:#f59e0b; font-size:9px; margin-top:2px;">SEAL: ' + r.seal + '</div>' +
+                  '</div>';
+                }).join('');
+              }
+              function saveOffline(e) {
+                e.preventDefault();
+                var item = {
+                  category: document.getElementById('cat').value,
+                  notes: document.getElementById('notes').value,
+                  seal: 'SEAL-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
+                  time: new Date().toLocaleTimeString()
+                };
+                records.push(item);
+                localStorage.setItem('mine_logs', JSON.stringify(records));
+                document.getElementById('notes').value = '';
+                render();
+                alert('⚠️ OFFLINE: Record phone disk par safely store ho gaya!');
+              }
+              function triggerAlarm() {
+                if (navigator.vibrate) navigator.vibrate([1000, 300, 1000, 300, 1500]);
+                alert('🚨 DGMS STATUTORY EVACUATION ALERT ENGAGED!');
+              }
+              render();
+            </script>
+          </body>
+          </html>
+          EOF
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.minepulse.dgms",
+            "appName": "MinePulse AI",
+            "webDir": "www",
+            "bundledWebRuntime": false
+          }
+          EOF
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap add android
+          npx cap sync
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MinePulse-AI-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          
