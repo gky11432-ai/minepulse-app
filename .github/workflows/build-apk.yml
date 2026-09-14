@@ -1,0 +1,74 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bundle Real Full Dashboard from Repository
+        run: |
+          mkdir -p www
+          python -c "
+          from ui import DASHBOARD_HTML
+          html = DASHBOARD_HTML.replace(\"fetch('/api/\", \"fetch('https://minepulse-app.onrender.com/api/\")
+          with open('www/index.html', 'w', encoding='utf-8') as f:
+              f.write(html)
+          "
+          cp -f manifest.json www/ 2>/dev/null || true
+          cp -f sw.js www/ 2>/dev/null || true
+
+      - name: Install Capacitor Core & CLI
+        run: |
+          npm init -y
+          npm install --save @capacitor/core@5.7.8 @capacitor/cli@5.7.8 @capacitor/android@5.7.8
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.minepulse.dgms",
+            "appName": "MinePulse AI",
+            "webDir": "www",
+            "bundledWebRuntime": false,
+            "server": {
+              "androidScheme": "https",
+              "cleartext": true
+            }
+          }
+          EOF
+          npx cap add android
+
+      - name: Build Android APK via Gradle
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MinePulse-AI-Full-Dashboard-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          
