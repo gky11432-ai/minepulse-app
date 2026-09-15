@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/grp_emergency">
+        <item
+            android:id="@+id/nav_sos"
+            android:icon="@android:drawable/ic_dialog_alert"
+            android:title="🚨 All-Mobile SOS Siren" />
+    </group>
+
+    <item android:title="📑 Reports &amp; Downloads">
+        <menu>
+            <item
+                android:id="@+id/nav_form6"
+                android:icon="@android:drawable/ic_menu_agenda"
+                android:title="📄 Form 6 Daily Audit (PDF)" />
+            <item
+                android:id="@+id/nav_master_csv"
+                android:icon="@android:drawable/ic_menu_save"
+                android:title="💾 Master Export (CSV/Excel)" />
+        </menu>
+    </item>
+
+    <item android:title="📋 Shift &amp; Personnel">
+        <menu>
+            <item
+                android:id="@+id/nav_attendance"
+                android:icon="@android:drawable/ic_menu_my_calendar"
+                android:title="⏱️ Form B Attendance Roll" />
+            <item
+                android:id="@+id/nav_tracking"
+                android:icon="@android:drawable/ic_menu_compass"
+                android:title="📍 Personnel Tracking Radar" />
+            <item
+                android:id="@+id/nav_diary"
+                android:icon="@android:drawable/ic_menu_edit"
+                android:title="📖 Mining Sirdar Diary (CMR 48)" />
+            <item
+                android:id="@+id/nav_lamproom"
+                android:icon="@android:drawable/ic_menu_day"
+                android:title="💡 Lamp Room Register" />
+            <item
+                android:id="@+id/nav_handover"
+                android:icon="@android:drawable/ic_menu_share"
+                android:title="🤝 Shift Handover Register" />
+        </menu>
+    </item>
+
+    <item android:title="🛡️ Statutory Safety Audits">
+        <menu>
+            <item
+                android:id="@+id/nav_ventilation"
+                android:icon="@android:drawable/ic_menu_rotate"
+                android:title="💨 Ventilation &amp; Gas (Reg 153)" />
+            <item
+                android:id="@+id/nav_strata"
+                android:icon="@android:drawable/ic_menu_gallery"
+                android:title="🪨 Strata &amp; Roof Support (Reg 48)" />
+            <item
+                android:id="@+id/nav_blasting"
+                android:icon="@android:drawable/ic_delete"
+                android:title="💥 Blasting &amp; Explosives" />
+            <item
+                android:id="@+id/nav_inundation"
+                android:icon="@android:drawable/ic_menu_info_details"
+                android:title="🌊 Inundation &amp; Water Danger" />
+            <item
+                android:id="@+id/nav_dust"
+                android:icon="@android:drawable/ic_menu_view"
+                android:title="🌫️ Coal Dust &amp; Water Spray" />
+            <item
+                android:id="@+id/nav_fire"
+                android:icon="@android:drawable/ic_menu_help"
+                android:title="🔥 Spontaneous Heating &amp; Fire" />
+        </menu>
+    </item>
+
+    <item android:title="🚜 Machinery &amp; Equipment">
+        <menu>
+            <item
+                android:id="@+id/nav_machinery"
+                android:icon="@android:drawable/ic_menu_preferences"
+                android:title="🚜 HEMM Machinery Fitness" />
+            <item
+                android:id="@+id/nav_haulage"
+                android:icon="@android:drawable/ic_menu_directions"
+                android:title="🚂 Haulage Track &amp; Safety" />
+            <item
+                android:id="@+id/nav_electrical"
+                android:icon="@android:drawable/ic_lock_power_off"
+                android:title="⚡ Flameproof Electrical Gear" />
+        </menu>
+    </item>
+
+</menu>
