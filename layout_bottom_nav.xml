@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_nav_bar"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="#020617"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:weightSum="4">
+    
+    <!-- 1. HUD (Home) -->
+    <LinearLayout android:id="@+id/nav_home" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_compass" app:tint="#0EA5E9" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-condensed" android:text="HUD" android:textColor="#0EA5E9" android:textSize="10sp" />
+    </LinearLayout>
+    
+    <!-- 2. RADAR -->
+    <LinearLayout android:id="@+id/nav_map" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_mylocation" app:tint="#64748B" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-condensed" android:text="RADAR" android:textColor="#64748B" android:textSize="10sp" />
+    </LinearLayout>
+    
+    <!-- 3. LOGS -->
+    <LinearLayout android:id="@+id/nav_reports" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#64748B" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-condensed" android:text="LOGS" android:textColor="#64748B" android:textSize="10sp" />
+    </LinearLayout>
+    
+    <!-- 4. PDF -->
+    <LinearLayout android:id="@+id/dock_btn_pdf" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_save" app:tint="#F59E0B" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-condensed" android:text="PDF" android:textColor="#F59E0B" android:textSize="10sp" />
+    </LinearLayout>
+</LinearLayout>
